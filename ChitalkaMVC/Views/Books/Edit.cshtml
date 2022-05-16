@@ -14,15 +14,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <select asp-for="AuthorId"><option value="">Choose Author</option>
-                        @await Component.InvokeAsync("ListAuthors")
-                </select>
-                <select asp-for="CenturyId"><option value="">Choose Century</option>
+                @await Component.InvokeAsync("ListAuthors", Model.AuthorId)
+                @*<select asp-for="CenturyId"><option value="">Choose Century</option>
                         @await Component.InvokeAsync("ListCenturies")
-                </select>
-                <select id="GenreId" name="GenreId" multiple="multiple">
-                        @await Component.InvokeAsync("ListGenres")
-                </select>
+                </select>*@
+                @await Component.InvokeAsync("ListCenturies", Model.CenturyId)
+                @await Component.InvokeAsync("ListGenres", Model.Genres)
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>

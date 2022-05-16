@@ -1,8 +1,9 @@
-﻿@model IList<ChitalkaMVC.Storage.Entities.Century>
+﻿@model ListCenturiesViewModel
  
 @{Layout = null;}
 
-    @foreach(var item in Model)
+   @* @foreach(var item in Model)
     {
         <option value=@item.Id>@item.Name</option>
-    }
+    }*@
+    @Html.DropDownListFor(model=>model.CenturyId, Model.Centuries)
