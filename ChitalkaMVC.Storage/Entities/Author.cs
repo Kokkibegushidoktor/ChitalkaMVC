@@ -9,5 +9,9 @@
         public int CountryId { get; set; }
         [ForeignKey(nameof(CountryId))]
         public virtual Country? Country { get; set; }
+        [Required]
+        public int AuthorImageId { get; set; }
+        [ForeignKey(nameof(AuthorImageId))]
+        public virtual AuthorImage? AuthorImage { get; set; }
     }
 }

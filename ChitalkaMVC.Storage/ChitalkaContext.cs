@@ -16,6 +16,7 @@ namespace ChitalkaMVC.Storage
         public DbSet<User> Users { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Note> Notes { get; set; }
+        public DbSet<AuthorImage> AuthorImages { get; set; }
 
     }
 }

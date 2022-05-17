@@ -13,6 +13,9 @@
     <thead>
         <tr>
             <th>
+               Image
+            </th>
+            <th>
                Name
             </th>
             <th>
@@ -26,7 +29,13 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+            <tr>
+                <td>
+                    @{
+                        var str = "/Images/Authors/" + item.AuthorImage.ImageName;
+                    }
+                    <img src=@str alt="...">
+            </td>
             <td>
                 @item.Name
             </td>

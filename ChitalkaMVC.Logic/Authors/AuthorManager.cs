@@ -1,22 +1,37 @@
 ﻿
+using Microsoft.AspNetCore.Hosting;
+
 namespace ChitalkaMVC.Logic.Authors
 {
     public class AuthorManager : IAuthorManager
     {
-        private ChitalkaContext _context;
-        public AuthorManager(ChitalkaContext context)
+        private readonly ChitalkaContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public AuthorManager(ChitalkaContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
         public async Task Create(Author item)
         {
+            var image = item.AuthorImage;
+            string root = _hostEnvironment.WebRootPath;
+            string filename = Path.GetFileNameWithoutExtension(image.ImageFile.FileName);
+            string extension = Path.GetExtension(image.ImageFile.FileName);
+            image.ImageName = filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
+            string path = Path.Combine(root + "/Images/Authors/", filename);
+            using (var filestream = new FileStream(path, FileMode.Create))
+            {
+                await image.ImageFile.CopyToAsync(filestream);
+            }
+            _context.AuthorImages.Add(image);
             _context.Authors.Add(item);
             await _context.SaveChangesAsync();
         }
 
         public async Task<Author> Find(int id)
         {
-            return await _context.Authors.Include(u => u.Country).FirstOrDefaultAsync(item => item.Id == id);
+            return await _context.Authors.Include(u => u.Country).Include(u=>u.AuthorImage).FirstOrDefaultAsync(item => item.Id == id);
         }
 
         public async Task<bool> Update(Author author)
@@ -51,6 +66,6 @@ namespace ChitalkaMVC.Logic.Authors
             }
         }
 
-        public async Task<IList<Author>> GetAll() => await _context.Authors.Include(u => u.Country).ToListAsync();
+        public async Task<IList<Author>> GetAll() => await _context.Authors.Include(u => u.Country).Include(u => u.AuthorImage).ToListAsync();
     }
 }
