@@ -23,6 +23,13 @@ namespace ChitalkaMVC.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            var books = await _manager.GetAll();
+            return View(books);
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             if (HttpContext.Session.GetInt32("_IsAdmin") != 1)
