@@ -31,10 +31,7 @@
 @foreach (var item in Model) {
             <tr>
                 <td>
-                    @{
-                        var str = "/Images/Authors/" + item.AuthorImage.ImageName;
-                    }
-                    <img src=@str alt="...">
+                    <img style="height: 225px; width: 225px" src=@item.ImagePath asp-append-version="true" />
             </td>
             <td>
                 @item.Name

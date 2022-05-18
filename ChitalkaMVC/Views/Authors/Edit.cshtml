@@ -1,4 +1,4 @@
-﻿@model ChitalkaMVC.Models.EditAuthorViewModel
+﻿@model ChitalkaMVC.Models.AuthorViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,6 +13,7 @@
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Author.Id" />
+            <input type="hidden" asp-for="Author.ImagePath" />
             <div class="form-group">
                 <select required asp-for="Author.CountryId"><option value="">Choose Country</option>
                         @await Component.InvokeAsync("ListCountries")
@@ -22,14 +23,13 @@
                 <span asp-validation-for="Author.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NewImage" class="control-label"></label>
-                <input asp-for="NewImage.ImageFile" accept="image/*" />
-                <span asp-validation-for="NewImage.ImageFile" class="text-danger"></span>
+                <label asp-for="Image" class="control-label"></label>
+                <input asp-for="Image" accept="image/*" />
+                <span asp-validation-for="Image" class="text-danger"></span>
             </div>
-            <div>@{
-                        var str = "/Images/Authors/" + Model.Author.AuthorImage.ImageName;
-                    }
-                    <img src=@str alt="..."></div>
+            <div>
+                    <img style="height: 225px; width: 225px" src=@Model.Author.ImagePath asp-append-version="true" />
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

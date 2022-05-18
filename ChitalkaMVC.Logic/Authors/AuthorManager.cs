@@ -1,5 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace ChitalkaMVC.Logic.Authors
 {
@@ -7,37 +7,62 @@ namespace ChitalkaMVC.Logic.Authors
     {
         private readonly ChitalkaContext _context;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private static readonly string _defaultImage = @"\Images\defaultauthor.png";
         public AuthorManager(ChitalkaContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
             _hostEnvironment = hostEnvironment;
         }
-        public async Task Create(Author item)
+
+        //Returns path that leads to the created image, or default image path if the passed image is null
+        private async Task<string> CreateImage(IFormFile? image, string filename)
         {
-            var image = item.AuthorImage;
             string root = _hostEnvironment.WebRootPath;
-            string filename = Path.GetFileNameWithoutExtension(image.ImageFile.FileName);
-            string extension = Path.GetExtension(image.ImageFile.FileName);
-            image.ImageName = filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
-            string path = Path.Combine(root + "/Images/Authors/", filename);
-            using (var filestream = new FileStream(path, FileMode.Create))
+            string path;
+            if (image != null)
             {
-                await image.ImageFile.CopyToAsync(filestream);
+                string extension = Path.GetExtension(image.FileName);
+                filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
+                path = Path.Combine("\\Images\\Authors\\", filename);
+                var filepath = Path.Combine(root + "\\Images\\Authors\\", filename);
+                using (var filestream = new FileStream(filepath, FileMode.Create))
+                {
+                    await image.CopyToAsync(filestream);
+                }
             }
-            _context.AuthorImages.Add(image);
+            else
+                path = _defaultImage;
+            return path;
+        }
+        private void DeleteImage(string imagepath)
+        {
+            var root = _hostEnvironment.WebRootPath;
+            imagepath = root + imagepath;
+            if (System.IO.File.Exists(imagepath))
+                System.IO.File.Delete(imagepath);
+        }
+        public async Task Create(Author item, IFormFile? image)
+        {
+            item.ImagePath = await CreateImage(image, item.Name);
             _context.Authors.Add(item);
             await _context.SaveChangesAsync();
         }
 
         public async Task<Author> Find(int id)
         {
-            return await _context.Authors.Include(u => u.Country).Include(u=>u.AuthorImage).FirstOrDefaultAsync(item => item.Id == id);
+            return await _context.Authors.Include(u => u.Country).FirstOrDefaultAsync(item => item.Id == id);
         }
 
-        public async Task<bool> Update(Author author)
+        public async Task<bool> Update(Author author, IFormFile? image)
         {
             try
             {
+                if (image != null)
+                {
+                    if (author.ImagePath != _defaultImage)
+                        DeleteImage(author.ImagePath);
+                    author.ImagePath = await CreateImage(image, author.Name);
+                }
                 _context.Update(author);
                 await _context.SaveChangesAsync();
             }
@@ -61,11 +86,13 @@ namespace ChitalkaMVC.Logic.Authors
             var item = _context.Authors.FirstOrDefault(item => item.Id == id);
             if (item != null)
             {
+                if(item.ImagePath != _defaultImage)
+                    DeleteImage(item.ImagePath);
                 _context.Authors.Remove(item);
                 await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<IList<Author>> GetAll() => await _context.Authors.Include(u => u.Country).Include(u => u.AuthorImage).ToListAsync();
+        public async Task<IList<Author>> GetAll() => await _context.Authors.Include(u => u.Country).ToListAsync();
     }
 }

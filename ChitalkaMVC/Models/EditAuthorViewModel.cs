@@ -2,9 +2,10 @@
 
 namespace ChitalkaMVC.Models
 {
-    public class EditAuthorViewModel
+    public class AuthorViewModel
     {
         public Author Author { get; set; }
-        public AuthorImage NewImage { get; set; }
+        public IFormFile? Image { get; set; }
+        
     }
 }

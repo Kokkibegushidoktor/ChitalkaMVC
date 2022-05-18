@@ -9,19 +9,6 @@ namespace ChitalkaMVC.Storage.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AuthorImages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AuthorImages", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Centuries",
                 columns: table => new
                 {
@@ -81,17 +68,11 @@ namespace ChitalkaMVC.Storage.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CountryId = table.Column<int>(type: "int", nullable: false),
-                    AuthorImageId = table.Column<int>(type: "int", nullable: false)
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Authors", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Authors_AuthorImages_AuthorImageId",
-                        column: x => x.AuthorImageId,
-                        principalTable: "AuthorImages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Authors_Countries_CountryId",
                         column: x => x.CountryId,
@@ -176,12 +157,6 @@ namespace ChitalkaMVC.Storage.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Authors_AuthorImageId",
-                table: "Authors",
-                column: "AuthorImageId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Authors_CountryId",
                 table: "Authors",
                 column: "CountryId");
@@ -229,9 +204,6 @@ namespace ChitalkaMVC.Storage.Migrations
 
             migrationBuilder.DropTable(
                 name: "Centuries");
-
-            migrationBuilder.DropTable(
-                name: "AuthorImages");
 
             migrationBuilder.DropTable(
                 name: "Countries");

@@ -31,11 +31,11 @@ namespace ChitalkaMVC.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("Name", "CountryId", "AuthorImage")] Author author)
+        public async Task<IActionResult> Create(AuthorViewModel model)
         {
             if (HttpContext.Session.GetInt32("_IsAdmin") != 1)
                 return RedirectToAction(nameof(HomeController.Forbidden), "Home");
-            await _manager.Create(author);
+            await _manager.Create(model.Author, model.Image);
             return RedirectToAction(nameof(Index));
         }
 
@@ -49,24 +49,24 @@ namespace ChitalkaMVC.Controllers
             var item = await _manager.Find((int)id);
             if (item == null)
                 return NotFound();
-            return View(new EditAuthorViewModel { Author = item });
+            return View(new AuthorViewModel { Author = item });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, EditAuthorViewModel model)
-        {//dodelai debil
+        public async Task<IActionResult> Edit(int id, AuthorViewModel model)
+        {
             if (HttpContext.Session.GetInt32("_IsAdmin") != 1)
                 return RedirectToAction(nameof(HomeController.Forbidden), "Home");
             if (id != model.Author.Id)
                 return NotFound();
             if (ModelState.IsValid)
             {
-                if (await _manager.Update(model.Author))
+                if (await _manager.Update(model.Author, model.Image))
                     return RedirectToAction(nameof(Index));
                 else
                     return NotFound();
             }
-            return View(model.Author);
+            return View(model);
         }
 
         [HttpGet]

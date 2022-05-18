@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChitalkaMVC.Storage.Migrations
 {
     [DbContext(typeof(ChitalkaContext))]
-    [Migration("20220517145232_InitialCreate")]
+    [Migration("20220518200733_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,11 +46,12 @@ namespace ChitalkaMVC.Storage.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AuthorImageId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -58,29 +59,9 @@ namespace ChitalkaMVC.Storage.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorImageId")
-                        .IsUnique();
-
                     b.HasIndex("CountryId");
 
                     b.ToTable("Authors");
-                });
-
-            modelBuilder.Entity("ChitalkaMVC.Storage.Entities.AuthorImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ImageName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AuthorImages");
                 });
 
             modelBuilder.Entity("ChitalkaMVC.Storage.Entities.Book", b =>
@@ -233,19 +214,11 @@ namespace ChitalkaMVC.Storage.Migrations
 
             modelBuilder.Entity("ChitalkaMVC.Storage.Entities.Author", b =>
                 {
-                    b.HasOne("ChitalkaMVC.Storage.Entities.AuthorImage", "AuthorImage")
-                        .WithOne("Author")
-                        .HasForeignKey("ChitalkaMVC.Storage.Entities.Author", "AuthorImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ChitalkaMVC.Storage.Entities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("AuthorImage");
 
                     b.Navigation("Country");
                 });
@@ -278,12 +251,6 @@ namespace ChitalkaMVC.Storage.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ChitalkaMVC.Storage.Entities.AuthorImage", b =>
-                {
-                    b.Navigation("Author")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ChitalkaMVC.Storage.Entities.User", b =>
