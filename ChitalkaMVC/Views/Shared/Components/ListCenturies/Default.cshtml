@@ -2,8 +2,4 @@
  
 @{Layout = null;}
 
-   @* @foreach(var item in Model)
-    {
-        <option value=@item.Id>@item.Name</option>
-    }*@
-    @Html.DropDownListFor(model=>model.CenturyId, Model.Centuries)
+   @Html.DropDownList(Model.AspFor, Model.Centuries)

@@ -13,12 +13,12 @@ namespace ChitalkaMVC.ViewComponents
         {
             _manager = manager;
         }
-        public async Task<IViewComponentResult> InvokeAsync(int authorId)
+        public async Task<IViewComponentResult> InvokeAsync(string aspFor, int authorId)
         {
             var authors = await _manager.GetAll();
             var Model = new ListAuthorsViewModel();
-            Model.Authors = new SelectList(authors, "Id", "Name");
-            Model.AuthorId = authorId;
+            Model.Authors = new SelectList(authors, "Id", "Name", authorId);
+            Model.AspFor = aspFor;
             return View(Model);
         }
     }

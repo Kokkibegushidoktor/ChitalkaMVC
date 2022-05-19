@@ -15,9 +15,7 @@
             <input type="hidden" asp-for="Author.Id" />
             <input type="hidden" asp-for="Author.ImagePath" />
             <div class="form-group">
-                <select required asp-for="Author.CountryId"><option value="">Choose Country</option>
-                        @await Component.InvokeAsync("ListCountries")
-                </select>
+                @await Component.InvokeAsync("ListCountries", new { aspFor = "Author.CountryId", countryId = Model.Author.CountryId })
                 <label asp-for="Author.Name" class="control-label"></label>
                 <input required asp-for="Author.Name" class="form-control" />
                 <span asp-validation-for="Author.Name" class="text-danger"></span>

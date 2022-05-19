@@ -2,9 +2,9 @@
 
 namespace ChitalkaMVC.Models
 {
-    public class ListCenturiesViewModel
+    public class ListCountriesViewModel
     {
         public string AspFor { get; set; }
-        public SelectList Centuries { get; set; }
+        public SelectList Countries { get; set; }
     }
 }

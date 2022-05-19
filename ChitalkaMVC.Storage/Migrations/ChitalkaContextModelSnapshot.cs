@@ -80,6 +80,10 @@ namespace ChitalkaMVC.Storage.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -195,6 +199,21 @@ namespace ChitalkaMVC.Storage.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ChitalkaMVC.Storage.Entities.UserBook", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "BookId");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("UserBook");
+                });
+
             modelBuilder.Entity("BookGenre", b =>
                 {
                     b.HasOne("ChitalkaMVC.Storage.Entities.Book", null)
@@ -251,9 +270,35 @@ namespace ChitalkaMVC.Storage.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ChitalkaMVC.Storage.Entities.UserBook", b =>
+                {
+                    b.HasOne("ChitalkaMVC.Storage.Entities.Book", "Book")
+                        .WithMany("UserBooks")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ChitalkaMVC.Storage.Entities.User", "User")
+                        .WithMany("UserBooks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ChitalkaMVC.Storage.Entities.Book", b =>
+                {
+                    b.Navigation("UserBooks");
+                });
+
             modelBuilder.Entity("ChitalkaMVC.Storage.Entities.User", b =>
                 {
                     b.Navigation("Notes");
+
+                    b.Navigation("UserBooks");
                 });
 #pragma warning restore 612, 618
         }

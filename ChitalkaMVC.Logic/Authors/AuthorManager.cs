@@ -36,6 +36,8 @@ namespace ChitalkaMVC.Logic.Authors
         }
         private void DeleteImage(string imagepath)
         {
+            if (imagepath == _defaultImage)
+                return;
             var root = _hostEnvironment.WebRootPath;
             imagepath = root + imagepath;
             if (System.IO.File.Exists(imagepath))

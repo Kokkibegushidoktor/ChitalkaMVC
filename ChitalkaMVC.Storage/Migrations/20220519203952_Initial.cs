@@ -4,7 +4,7 @@
 
 namespace ChitalkaMVC.Storage.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -112,6 +112,7 @@ namespace ChitalkaMVC.Storage.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Visibility = table.Column<bool>(type: "bit", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AuthorId = table.Column<int>(type: "int", nullable: false),
                     CenturyId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -156,6 +157,30 @@ namespace ChitalkaMVC.Storage.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserBook",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BookId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserBook", x => new { x.UserId, x.BookId });
+                    table.ForeignKey(
+                        name: "FK_UserBook_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserBook_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Username",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Authors_CountryId",
                 table: "Authors",
@@ -180,6 +205,11 @@ namespace ChitalkaMVC.Storage.Migrations
                 name: "IX_Notes_Username",
                 table: "Notes",
                 column: "Username");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserBook_BookId",
+                table: "UserBook",
+                column: "BookId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -191,10 +221,13 @@ namespace ChitalkaMVC.Storage.Migrations
                 name: "Notes");
 
             migrationBuilder.DropTable(
-                name: "Books");
+                name: "UserBook");
 
             migrationBuilder.DropTable(
                 name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "Books");
 
             migrationBuilder.DropTable(
                 name: "Users");

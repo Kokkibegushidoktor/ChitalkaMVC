@@ -4,7 +4,7 @@ namespace ChitalkaMVC.Models
 {
     public class ListAuthorsViewModel
     {
-        public int AuthorId { get; set; }
+        public string AspFor { get; set; }
         public SelectList Authors { get; set; }
     }
 }
