@@ -14,14 +14,14 @@ namespace ChitalkaMVC.Logic.Books
             _hostEnvironment = webHostEnvironment;
         }
 
-        private async Task<string> CreateImage(IFormFile? image, string filename)
+        private async Task<string> CreateImage(IFormFile? image)
         {
             string root = _hostEnvironment.WebRootPath;
             string path;
             if (image != null)
             {
                 string extension = Path.GetExtension(image.FileName);
-                filename = filename + DateTime.Now.ToString("yymmssfff") + extension;
+                string filename = Path.GetFileNameWithoutExtension(image.FileName) + DateTime.Now.ToString("yymmssfff") + extension;
                 path = Path.Combine("\\Images\\Books\\", filename);
                 var filepath = Path.Combine(root + "\\Images\\Books\\", filename);
                 using (var filestream = new FileStream(filepath, FileMode.Create))
@@ -45,7 +45,7 @@ namespace ChitalkaMVC.Logic.Books
 
         public async Task Create(Book book, IFormFile? image)
         {
-            book.ImagePath = await CreateImage(image, book.Name);
+            book.ImagePath = await CreateImage(image);
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
         }
@@ -111,7 +111,7 @@ namespace ChitalkaMVC.Logic.Books
                     {
                         if (book.ImagePath != _defaultImage)
                             DeleteImage(book.ImagePath);
-                        book.ImagePath = await CreateImage(image, book.Name);
+                        book.ImagePath = await CreateImage(image);
                     }
                     await _context.SaveChangesAsync();
                 }

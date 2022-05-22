@@ -29,6 +29,20 @@ namespace ChitalkaMVC.Controllers
             var books = await _manager.GetAll();
             return View(books);
         }
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var item = await _manager.Find((int)id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+            return View(item);
+        }
 
         [HttpGet]
         public IActionResult Create()
