@@ -47,7 +47,6 @@ namespace ChitalkaMVC.Controllers
             var au = HttpContext.Session.GetInt32("_Auth");
             if (au != 1)
                 return RedirectToAction("Login");
-            ViewBag.session = HttpContext.Session.Id;
             ViewBag.isadmin = HttpContext.Session.GetInt32("_IsAdmin");
             ViewBag.auth = au;
             return View();
