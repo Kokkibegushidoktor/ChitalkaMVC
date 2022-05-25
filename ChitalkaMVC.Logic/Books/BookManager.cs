@@ -50,8 +50,10 @@ namespace ChitalkaMVC.Logic.Books
             await _context.SaveChangesAsync();
         }
 
-        public async Task SetGenresById(Book book, int[] ids)
+        public async Task SetGenresById(Book book, int[]? ids)
         {
+            if (ids == null)
+                return;
             book.Genres = new List<Genre> { };
             foreach(int id in ids)
             {
