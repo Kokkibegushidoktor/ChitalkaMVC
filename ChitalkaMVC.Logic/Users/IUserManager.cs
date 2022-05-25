@@ -7,6 +7,7 @@
         Task<(bool, bool)> Find(User user);
         Task<bool> Update(User user);
         Task<User> Get(string username);
+        Task<User> GetByMail(string mail);
         Task Delete(string username);
     }
 }

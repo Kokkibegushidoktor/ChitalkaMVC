@@ -111,9 +111,9 @@ namespace ChitalkaMVC.Logic.Books
                         existingBook.Genres.Add(genre);
                     if (image != null)
                     {
-                        if (book.ImagePath != _defaultImage)
-                            DeleteImage(book.ImagePath);
-                        book.ImagePath = await CreateImage(image);
+                        if (existingBook.ImagePath != _defaultImage)
+                            DeleteImage(existingBook.ImagePath);
+                        existingBook.ImagePath = await CreateImage(image);
                     }
                     await _context.SaveChangesAsync();
                 }

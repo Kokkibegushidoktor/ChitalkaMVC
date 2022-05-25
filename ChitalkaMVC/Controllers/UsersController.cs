@@ -83,13 +83,19 @@ namespace ChitalkaMVC.Controllers
                 return RedirectToAction("Login");
             if (ModelState.IsValid)
             {
+                if (await _manager.GetByMail(model.Email) != null)
+                {
+                    model.Result = "Mail already in use";
+                    model.Email = null;
+                    return View(model);
+                }
                 if (HttpContext.Session.GetInt32("_VerCode") == null)
                 {
                     Random rand = new Random();
                     var code = rand.Next(10000, 99999);
                     HttpContext.Session.SetInt32("_VerCode", code);
                     HttpContext.Session.SetString("_Mail", model.Email);
-                    EMailService.SendEmail(model.Email, code);
+                    EMailService.SendEmail(model.Email, code, "Mail Verification");
                     model.Result = "Email Sent";
                 }
                 else
@@ -100,7 +106,7 @@ namespace ChitalkaMVC.Controllers
                     {
                         var user = await _manager.Get(HttpContext.Session.GetString("_Username"));
                         user.Mail = HttpContext.Session.GetString("_Mail");
-                        if (await _manager.Update(user))
+                        await _manager.Update(user);
                         HttpContext.Session.Remove("_VerCode");
                         HttpContext.Session.Remove("_Mail");
                         return RedirectToAction(nameof(Profile));
@@ -109,12 +115,99 @@ namespace ChitalkaMVC.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult PasswordReset()
+        {
+            return View(new PasswordResetViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PasswordReset(PasswordResetViewModel model)
+        {
+            if ((HttpContext.Session.GetInt32("_PVerCode") == null) && (model.Email != null))
+            {
+                if (await _manager.GetByMail(model.Email) != null)
+                {
+                    Random rand = new Random();
+                    var code = rand.Next(10000, 99999);
+                    HttpContext.Session.SetInt32("_PVerCode", code);
+                    HttpContext.Session.SetString("_PMail", model.Email);
+                    EMailService.SendEmail(model.Email, code, "Password Reset");
+                }
+                model.Result = "Check your inbox";
+                return View(model);
+            }
+            if (ModelState.IsValid)
+            {
+                if (model.ConfirmationCode != HttpContext.Session.GetInt32("_PVerCode"))
+                {
+                    model.Result = "Code is not valid";
+                    return View(model);
+                }
+                if (model.Password != model.ConfirmPassword)
+                {
+                    model.Result = "The passwords you entered do not match";
+                    return View(model);
+                }
+                var user = await _manager.GetByMail(HttpContext.Session.GetString("_PMail"));
+                user.Password = model.Password;
+                await _manager.Update(user);
+                HttpContext.Session.Clear();
+                return RedirectToAction(nameof(Login));
+            }
+            return View(new PasswordResetViewModel());
+        }
+
         [HttpPost]
         [Route("users/logout")]
         public IActionResult LogoutConfirmed()
         {
             HttpContext.Session.Clear();
             return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet] 
+        public IActionResult Password()
+        {
+            var au = HttpContext.Session.GetInt32("_Auth");
+            if (au != 1)
+                return RedirectToAction("Login");
+            return View(new ManageUserPasswordViewModel());
+        }
+        [HttpPost]
+        public async Task<IActionResult> Password(ManageUserPasswordViewModel model)
+        {
+            var au = HttpContext.Session.GetInt32("_Auth");
+            if (au != 1)
+                return RedirectToAction("Login");
+            if (ModelState.IsValid)
+            {
+                var authRes = (auth: false, admin: false);
+                authRes = await _manager.Find(new User { Password = model.OldPassword, Username = HttpContext.Session.GetString("_Username") });
+                if (authRes.auth != true)
+                {
+                    model.Result = "Incorrect current password";
+                    return View(model);
+                }
+                if (model.Password != model.ConfirmPassword)
+                {
+                    model.Result = "The passwords you entered do not match";
+                    return View(model);
+                }
+                if (model.Password == model.OldPassword)
+                {
+                    model.Result = "New password can not be the same as the old one";
+                    return View(model);
+                }
+                var user = await _manager.Get(HttpContext.Session.GetString("_Username"));
+                user.Password = model.Password;
+                await _manager.Update(user);
+                HttpContext.Session.Clear();
+                return RedirectToAction(nameof(Login));
+            }
+                
+            return View(model);
         }
 
         [HttpGet]

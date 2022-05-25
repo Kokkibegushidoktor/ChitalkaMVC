@@ -5,14 +5,14 @@ namespace ChitalkaMVC
 {
     public static class EMailService
     {
-        public static void SendEmail(string receiver, int verificationCode)
+        public static void SendEmail(string receiver, int verificationCode, string subject)
         {
             try
             {
                 MailMessage message = new();
                 message.From = new MailAddress("susysugoma@gmail.com", "Chitalka Verification");
                 message.To.Add(receiver);
-                message.Subject = "Mail Verification";
+                message.Subject = subject;
                 message.Body = "Your verification code is: " + verificationCode.ToString();
 
                 using (SmtpClient client = new("smtp.gmail.com"))

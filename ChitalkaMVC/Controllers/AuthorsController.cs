@@ -24,9 +24,11 @@ namespace ChitalkaMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List(int? countryId)
         {
             var authors = await _manager.GetAll();
+            if (countryId != null)
+                authors = authors.Where(a => a.CountryId == countryId).ToList();
             return View(new AuthorListViewModel { Options = new AuthorFilterOptions(), Authors = authors });
         }
         [HttpPost]

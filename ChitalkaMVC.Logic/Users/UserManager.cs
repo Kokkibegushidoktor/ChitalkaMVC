@@ -39,6 +39,10 @@
                 authRes.admin = true;
             return authRes;
         }
+        public async Task<User> GetByMail(string mail)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Mail == mail);
+        }
 
         public async Task<bool> Update(User user)
         {
